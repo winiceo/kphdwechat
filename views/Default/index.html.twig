@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<script>
+var version = '20160602',
+wwwdomain = 'http://wall-dev.71an.com/',
+imgdomain = 'http://img.wkey.cn/',
+wsdomain = 'ws://wall-dev.71an.com:1337',
+env = 'dev';
+</script>
+<!-- 模板配置 -->
+<link rel="shortcut icon" href="./favicon.ico"/>
+<meta name="renderer" content="webkit" />
+<html style="height:100%;width:100%;padding:0px;margin:0px;overflow:hidden;position:absolute;bottom:0px;">
+
+<head>
+        <meta charset="UTF-8">
+        <meta http-equiv="pragma" content="no-cache">
+        <meta http-equiv="cache-control" content="no-cache">
+        <meta http-equiv="expires" content="0">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
+        <meta content="yes" name="apple-mobile-web-app-capable" />
+        <meta content="black" name="apple-mobile-web-app-status-bar-style" />
+        <meta content="telephone=no" name="format-detection" />
+        <meta name="screen-orientation" content="portrait">
+        <meta name="x5-orientation" content="portrait">
+        <title>快屏</title>
+        <link rel="stylesheet" href="/public/css/mui-switch.css" />
+        <link rel="stylesheet" href="/public/js/plugin/swiper-3.3.1/css/swiper.min.css" />
+        <link rel="stylesheet" href="/public/js/plugin/layer.mobile-v1.5/layer.m/need/layer.css">
+        <link rel="stylesheet" href="/public/css/jquery.emojiarea.css" >
+        <style>*{overflow:hidden;}</style>
+        <link rel="stylesheet" href="/public/css/kpwechat.css">
+</head>
+
+<body class="mapp-main-container" style="height:100%;width:100%;padding:0px;margin:0px;overflow-y:hidden;">
+
+        <div class="mapp-mask mapp-welcome" style="background: #fffef1;">
+                <img class="mapp-welcome-logo" src="/public/images/wap/welcomelogo.svg" />
+                <div class="spinner"><div class="spinner-container container1"><div class="circle1"></div><div class="circle2"></div><div class="circle3"></div><div class="circle4"></div></div><div class="spinner-container container2"><div class="circle1"></div><div class="circle2"></div><div class="circle3"></div><div class="circle4"></div></div><div class="spinner-container container3"><div class="circle1"></div><div class="circle2"></div><div class="circle3"></div><div class="circle4"></div></div>
+                </div>
+        </div>
+        <ul class="mapp-page-list" style="padding:0px;margin:0px;width:100%;height:100%;">
+        </ul>
+
+        <script type="text/template" id="page-container-template" style="height:0px;width:0px;overflow:hidden;">
+                <li class="mapp-page-item"></li>
+        </script>
+
+        <div id="shareMask" class="sharemask"></div>
+        <div id="shareTip" class="sharetip"><img src="/public/images/wap/share-tips.png" alt="分享点击右上角"></div>
+
+        <div style="display: none;">
+        <form id="form-uploader" target="form-uploader-frame" action="/admin/common/callBackUpload.html" enctype="multipart/form-data" method="post">
+                        <input type="hidden" name="type" value="image" />
+                        <input type="hidden" name="callBack" value="callBack" />
+                        <input type="hidden" name="autoRotation" value="true" />
+                        <input id="sendFile" name="uploadFile" type="file"/>
+        </form>
+        <iframe name="form-uploader-frame"></iframe>
+        </div>
+
+        <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+        <!-- 这个layer.m.js 会自动加入一个layer.css 的引用，单独放 -->
+        <script src="/public/js/plugin/layer.mobile-v1.5/layer.m/layer.m.js?v=20160816"></script>
+        <script src="/public/js/plugin/swiper-3.3.1/js/swiper.min.js" ></script>
+        <script src="/public/js/mobile/kphdwechat/plugins.min.js?v=20160816" ></script>
+        <script src="/public/js/mobile/kphdwechat/kpwechat.js?v=20160816" ></script>
+        <script src="/public/js/mobile/kphdwechat/emoji.js?v=20160816" ></script>
+
+        <script type="text/javascript" src="/public/js/mobile/kphdwechat/autobahn.min.js"></script>
+        <script type="text/javascript" src="/public/js/mobile/kphdwechat/gos_web_socket_client.js"></script>
+        <script src="/public/js/mobile/kphdwechat/socket.js?v=20160816"></script>
+        <script src="/public/js/utils/localforage.min.js"></script>
+
+        <script >moment.locale('zh-cn');</script>
+        <script>
+        (function(window, $, Mapp, KpwechatMain, Loader, Waiter, undefined) {
+                'use strict';
+
+                var flag = {{ activityId}};
+                localforage.setItem('activityId', flag, function (err) {
+                });
+
+                window.config = {{wechat_js|raw}};
+                localforage.setItem('wechatjs', window.config, function (err) {
+                });
+                window.showShareMask = function(){
+                        $('#shareMask').show();
+                        $('#shareTip').show();
+                };
+
+                window.hideShareMask = function(){
+                        $('#shareMask').hide();
+                        $('#shareTip').hide();
+                };
+
+                $(function(){
+                        $(document.body).on('tap','#shareMask,#shareTip',hideShareMask);
+                });
+
+                $(function() {
+                        var app = window.__app = new KpwechatMain('.mapp-page-list', {
+                                routers: {
+                                        '/public/html/chatroom.html' : {
+                                                title:'快屏',
+                                                resource:function(app, route, hash, params,ext){
+                                                        return new RoomResource(app, route, hash, params,ext);
+                                                }
+                                        }, '/w/wallmsg/:flag/inputor.html':{
+                                                title:'快屏',
+                                                resource:function(app, route, hash, params,ext){
+                                                        return new InputorResource(app, route, hash, params,ext);
+                                                }
+                                        }, '/w/wallmsg/:flag/viewer.html':{
+                                                title:'快屏',
+                                                resource:function(app, route, hash, params,ext){
+                                                        return new ViewerResource(app, route, hash, params,ext);
+                                                }
+                                        }
+                                }
+                        });
+                        app.wsdomain = 'ws://wall.71an.com:1337'; // http://hi.xxxx to ws://hixxx
+                        app.flag = flag ;
+                        app.usr = {
+                                id: '{{ wxuser.openid }}',
+                                nickname: '{{ wxuser.nickName}}',
+                                avatarPath: '{{ wxuser.avatar}}'
+                        };
+                        localforage.setItem('nickname', app.usr.nickname, function (err) {
+                                        });
+                        app.title = '{{ activityTitle }}';
+
+                        var loader = new Loader();
+                        // 桥接缓存器
+                        app.load = function(uri,callback){
+                                loader.cacher.load(uri,function(html){
+                                        html = html.replace(/\{\{flag\}\}/ig,app.flag).replace(/\{\{openid\}\}/ig,'ootL0stzZnbgOGvKZX3oy4JEvLvY').replace(/\{\{userid\}\}/ig,'6').replace(/\{\{key\}\}/ig,'');
+                                        callback(html);
+                                });
+                        };
+                        // 加载资源
+                        var resources = [];
+                        resources.push('/public/html/chatroom.html?v=2016081701');
+
+                        loader.load(resources, function(end) {
+                                // 缓存
+                                loader.cacher.apply(loader, arguments);
+
+                                if (!end) {
+                                        return;
+                                }
+
+                                startup();
+                        });
+                        var startup = app.startup.bind(app, Waiter.timerout(function() {
+                                $(window.document.body).on('touch', 'a', function(e) {
+                                        var href = $(this).attr('href') || '';
+                                        if (href.indexOf('javascript:') == 0) e.stopPropagation();
+                                });
+                                new TimelineMax().to('.spinner',0.2,{transform:'scale(0)'}).to('.mapp-welcome-logo',0.2,{opacity:0,marginTop:'10px'}).to('.mapp-mask.mapp-welcome',0.2,{opacity:0}).add(function(){
+                                        $('.mapp-mask.mapp-welcome').remove();
+                                        app.redirect('/public/html/chatroom.html', true);
+                                });
+
+                                var retryCount = 0;
+                                var retry = function(fn){
+                                    retryCount++;
+                                    fn();
+                                };
+                                var sign = function(){
+                                      app.signatured(window.config, function(err) {
+                                         if (err && env !== 'dev') {
+                                              if(retryCount < 3){
+                                                retry(function(){
+                                                  sign();
+                                                });
+                                              }else{
+                                                layer.open({content:'微信签名失败，可能会影响到部分功能使用，请尝试重新签名！' + (err.message ? '(' + err.message + ')' : ''),shadeClose:false,btn:['重新签名'],yes:function(){window.location.reload();}});
+                                              }
+                                             return;
+                                         }
+                                         initMenuSahre();
+                                      }, false);
+                                };
+                                sign();
+                        }, 100));
+                });
+
+                // document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
+
+                var them = '快屏（微网页版）';
+                var link = wwwdomain + 'wechat/activity/' +flag+ '/index';
+                var imgUrl = wwwdomain + 'public/images/wap/kplogo.jpg';
+                var initMenuSahre = function(){
+                        if(!wx) return;
+                        wx.hideMenuItems({
+                                menuList: ["menuItem:exposeArticle"
+                                           ,"menuItem:share:qq"
+                                       ,"menuItem:share:weiboApp"
+                                       ,"menuItem:favorite"
+                                       ,"menuItem:share:facebook"
+                                       ,"menuItem:share:QZone"
+                                       ,"menuItem:editTag"
+                                       ,"menuItem:delete"
+                                       ,"menuItem:copyUrl"
+                                       ,"menuItem:originPage"
+                                       ,"menuItem:readMode"
+                                       ,"menuItem:openWithQQBrowser"
+                                       ,"menuItem:openWithSafari"
+                                       ,"menuItem:share:email"
+                                       ,"menuItem:share:brand"]
+                        });
+                        var title = '我正在参加' + them + '微信上墙，快来看看吧！ |快屏';
+                        wx.onMenuShareTimeline({
+                                title: title,
+                                link: link,
+                                imgUrl: imgUrl,
+                                trigger: function(res) {
+                                },
+                                success: function(res) {
+                                },
+                                cancel: function(res) {
+                                },
+                                fail: function(res) {
+                                }
+                        });
+                        wx.onMenuShareAppMessage({
+                                title: title,
+                                link: link,
+                                imgUrl: imgUrl,
+                            desc: '', // 分享描述
+                            type: '', // 分享类型,music、video或link，不填默认为link
+                            dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
+                            success: function () {
+                                // 用户确认分享后执行的回调函数
+                            },
+                            cancel: function () {
+                                // 用户取消分享后执行的回调函数
+                            }
+                        });
+                }
+
+                // document.querySelector('.room-header').addEventListener('touchstart',function(e){e.preventDefault();});
+                // document.addEventListener('touchmove', function (e) {e.preventDefault;}, false);
+        })(window, window.jQuery || window.Zepto,window.Mapp, window.KpwechatMain, window.Loader, window.Waiter);
+        </script>
+</body>
+
+</html>

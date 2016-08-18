@@ -1,0 +1,118 @@
+@charset "utf-8";
+/* note :    快屏互动项目 用于手机端摇一摇的样式文件
+ * version:  1.0.1
+ * content: 包含的内容有： 摇一摇
+ * author：	陈实
+ * creatTime:  2015-05-09
+ * updateTime: 2015-06-05
+ */
+html  { width: 100%; height: 100%;}
+body { width: 100%; height: 100%; padding: 0; margin: 0; font-family: "Helvetica Neue", Helvetica, STHeiTi, Microsoft YaHei;  font-size:14px; color:#FFF;background: url(../images/wap/shakebg.png) no-repeat; background-size: 100% 100%; position: relative;}
+header,section { display:block; box-sizing:border-box;}
+ul, li { list-style: none; margin: 0; padding: 0;}
+h1, h2, h3, h4, h5, p { margin: 0;}
+img { border: 0;}
+input, img { vertical-align: middle;}
+a { border:0; text-decoration:none;}
+input{font-family:"微软雅黑";}
+/*去除一些浏览器给标签加的特定样式*/
+* { -webkit-tap-highlight-color: rgba(0,0,0,0);}
+ input[type="button"], input[type="submit"], input[type="reset"] {-webkit-appearance: none;}
+textarea {  -webkit-appearance: none;} 
+input:-moz-placeholder { color: #aab2bd; }
+::-webkit-input-placeholder { color:#aab2bd; }
+
+.none{ display: none;}
+.block{ display: block;}
+
+header{ width:100%; line-height:44px; height:44px; font-size:18px; background-color:#141616; color:#FFF; text-align: center;}
+section { width:100%; padding:15px 0; vertical-align: middle; text-align: center;}
+section img.shake,section img.shake-in1,section img.shake-in2{ vertical-align: middle;}
+section .shake-in2{ position: absolute; margin-left: -60%; z-index: 0; opacity:0.2;transform: rotate(-10deg);-webkit-transform: rotate(-10deg);}
+.shakerote1{
+	-webkit-animation-name: shakerote;
+	-webkit-animation-duration: 0.3s;
+	-webkit-animation-timing-function: ease-in;
+	-webkit-animation-iteration-count: infinite;
+	-webkit-animation-direction: alternate;
+	/* -webkit-animation-play-state:paused; */
+}
+.shakerote2{ position: absolute; margin-left: -60%; z-index: 0;
+	-webkit-animation-name: shakeshade;
+	-webkit-animation-duration: 0.3s;
+	-webkit-animation-timing-function: ease-in;
+	-webkit-animation-iteration-count: infinite;
+	-webkit-animation-delay: 0.1s;
+	-webkit-animation-direction: alternate;
+	/* -webkit-animation-play-state:paused; */
+}
+@keyframes shakerote
+{
+from {transform: rotate(-40deg);}
+to {transform: rotate(50deg); opacity: 0.7;}
+}
+@-webkit-keyframes shakerote /* Safari 和 Chrome */
+{
+from {-webkit-transform: rotate(-40deg);}
+to {-webkit-transform: rotate(50deg); opacity: 0.7;}
+}
+@keyframes shakeshade
+{
+from {transform: rotate(-40deg); opacity: 0.3;}
+to {transform: rotate(45deg); opacity: 0;}
+}
+@-webkit-keyframes shakeshade /* Safari 和 Chrome */
+{
+from {-webkit-transform: rotate(-25deg); opacity: 0.3;}
+to {-webkit-transform: rotate(45deg); opacity: 0;}
+}
+section p{ width:100%; text-align: center; line-height: 28px; font-size: 18px; margin-top: 10px;}
+.shakeover{ width:100%; padding-bottom:15px; vertical-align: middle; text-align: center; padding-top: 20px;}
+.shakeover .people{ width: 60%; margin-left:17%; display: block; margin-bottom: 10px;}
+.shakeover h3{color: #FFF; font-size: 2.2em; line-height: 1.2em; height: 1.2em;font-weight: normal;}
+.shakeover p{color: #FFF; font-size: 1.6em;}
+.shakeover p span{color: #389fda; font-size: 1em; display: inline-block; padding: 1px 15px; background-color: #FFF; border-radius: 5px; font-weight: bold;}
+.shakeover .sharebtn{ width: 100%; text-align: center; margin-top: 15px;}
+.shakeover .sharebtn a{ width: 54%; min-width: 200px; display: block; margin: 0 auto;}
+.shakeover .sharebtn a img{ width: 54%; min-width: 200px;}
+.shakeover-small{ width:100%; padding-bottom:15px; vertical-align: middle; text-align: center;padding-top:10%;}
+.shakeover-small .people{ width:50%; margin-left:17%; display: block; margin-bottom: 10px;}
+.shakeover-small h3{color: #FFF;font-size: 1.6em; line-height: 1.1em; height: 1.1em;font-weight: normal;}
+.shakeover-small p{color: #FFF;font-size: 1.2em;  margin-top: 0px;}
+.shakeover-small p span{color: #389fda; font-size: 1em; background-color: #FFF; border-radius: 5px; font-weight: bold;display: inline-block; padding: 0 12px;}
+.shakeover-small .sharebtn{ width: 100%; text-align: center; margin-top: 15px;}
+.shakeover-small .sharebtn a{ width: 54%; min-width: 200px; display: block; margin: 0 auto;}
+.shakeover-small .sharebtn a img {max-width: 160px;}
+.shakeover-small .bottom .arrow{ margin:2px auto;}
+.shakerefuse{ width:100%; padding-bottom:15px; vertical-align: middle; text-align: center; padding-top: 15%;}
+.shakerefuse .smile{ width: 30%; display: block; margin:0 auto; margin-bottom: 10px;}
+.shakerefuse .sharebtn{ width: 100%; text-align: center; margin-top:45px;}
+.shakerefuse .sharebtn a{width: 46%; min-width: 180px; display: block; margin: 0 auto;}
+.shakerefuse .sharebtn a img{ width: 54%; min-width: 200px;}
+.shakerefuse p{ width:80%; margin:20px auto; text-align:center; font-size: 14px;}
+.shakerefuse p span{ color:#f5595a; font-weight:bold; font-size:1.6em;}
+audio{ width:0; height:0; visibility:hidden;overflow:hidden;}
+/*分享弹出遮罩*/
+.sharemask{display:none; position: fixed; left: 0; top: 0; z-index: 998; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8);}
+.sharetip{display:none; position: fixed; right: 8%; top: 0; z-index: 999; text-align: right;}
+.sharetip img{ width: 90%;}
+/*引导去创建活动*/
+.bottom{ width:44%; position:absolute; font-size:12px; color:#000; left:28%; bottom: 1%;}
+.bottom .hibtn,.bottom .hibtn:link,.bottom .hibtn:visited,.bottom .hibtn:hover{ width:90%; box-sizing: border-box; border:1px solid #FFF; border-radius: 24px; line-height: 27px; height: 30px; text-align:center; color: #FFF; display: block; text-decoration: none; margin:0 auto;}
+.bottom .arrow{ text-align: center; margin: 8px auto;}
+.bottom .arrow img{ width:8px;}
+.bottom p{ width:100%; text-align: center; font-size: 12px;margin-top: -8px; color:#FFF;}
+.bottom p a,.bottom p a:link,.bottom p a:visited,.bottom p a:hover{ color: #f9cd45; text-decoration: none;}
+/*针对iphone4s即以下的设置*/
+@media (max-height: 550px){ 
+	.shakeover{padding-top:10%;}
+	.shakeover .people{ width:50%;}
+	.shakeover h3{font-size: 1.6em;}
+	.shakeover p{font-size: 1.2em;  margin-top: 0px;}
+	.shakeover p span{ display: inline-block; padding: 0 12px;}
+	.shakeover .sharebtn a img {min-width: 160px;}
+	.bottom .arrow{ margin:2px auto;}
+}
+@media (max-height: 480px){ 
+	.bottom{ position: static; margin: 0 auto; margin-top: 25px;}
+}

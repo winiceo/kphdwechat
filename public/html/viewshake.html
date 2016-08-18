@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="快屏互动,微信墙,微信大屏幕,微现场,嗨现场,趣现场,微信互动,场景互动,微信现场互动,免费微信墙,微信上墙,会展微信墙,婚庆微信墙,婚礼微信墙,年会微信墙,会议微信墙,赛事微信墙,微信表白墙,微信墙源码,晚会互动游戏,微信墙申请,微信互动平台">
+    <meta name="description" content="快屏互动是一款免费，简单，好用，个性化的场景互动（微信墙|微信大屏幕）制作工具，包括微信上墙、签到、抽奖、投票等微现场互动功能，更有摇一摇、摇红包、数钱、对对碰等互动大屏幕游戏，适用于会议活动、婚礼婚庆、培训、年会、校园活动、赛事、演出等各类活动微现场，全部功能免费使用，无限制，活动零成本，现场互动效果佳，微信增粉效果好。">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
+    <!--自适应设备宽度-->
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta content="black" name="apple-mobile-web-app-status-bar-style" />
+    <meta content="telephone=no" name="format-detection" />
+    <link rel="stylesheet" href="/public/css/wapshake.css">
+    <link rel="stylesheet" href="/public/css/wap-copyright.css?v=20160816" />
+    <title>摇一摇</title>
+    <script>
+        var version = '20160602',
+                wwwdomain = 'http://wall.71an.com/',
+                env = 'product';
+    </script>
+    <!-- 模板配置 -->
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <script>
+        // if (env && env == 'product') {
+        //     var useragent = navigator.userAgent;
+        //     if (useragent.match(/MicroMessenger/i) != 'MicroMessenger') {
+        //         alert('已禁止本次访问：您必须使用微信内置浏览器访问本页面！');
+        //         var opened = window.open('about:blank', '_self');
+        //         opened.opener = null;
+        //         opened.close();
+        //     }
+        // }
+    </script>
+</head>
+
+<body>
+<div class="g-doc">
+    <div class="g-bd">
+        <!-- // 返回微网页；入口页面 -->
+        <a class="back-to-button" back-to-with-chat-nobound="true" id="backtowall" style="display:block;width:69px;height:24.5px;border-radius:5px;line-height:24.5px;border:1px solid #fef9d9;position:absolute;left:10px;top:7px;font-size:10px;text-decoration:none;color:#fef9d9;text-align:center;z-index:999;display:none;">返回微信墙</a>
+        <section id="In" class="none" style="margin-top: 300px;">
+            <img width="61%" class="shake-in1" src="/public/images/wap/shakerote.png" alt="">
+            <img width="61%" class="shake-in2" src="/public/images/wap/shakerote.png" alt="">
+        </section>
+        <section id="NotStarted" class="none">
+            <img src="/public/images/wap/ready.png" class="shake" width="30%" alt="摇一摇">
+            <p>摇一摇未开始</p>
+        </section>
+        <section id="Finish" class="shakeover none">
+            <img src="/public/images/wap/people.png" class="people" alt="摇一摇">
+            <h3>摇一摇已结束</h3>
+            <p></p>
+            <div class="sharebtn">
+                <a class="shareBtn-a" href="javascript:;" title="独乐不如众乐，赶紧分享吧"><img class="may-click" src="/public/images/wap/sharebtn.png" alt=""></a>
+            </div>
+        </section>
+        <section id="hasWin" class="shakerefuse none">
+            <p>你之前得了第 <span>3</span> 名，<span>5</span>轮内不能参与
+                <br>把机会留给别人吧</p>
+            <img class="smile" src="/public/images/wap/ending.png" alt="摇一摇">
+            <div class="sharebtn">
+                <a class="shareBtn-a" href="javascript:;" title="找朋友摇"><img class="may-click" src="/public/images/wap/shake-other.png" alt="找朋友摇"></a>
+            </div>
+        </section>
+        <div id="shareMask" class="sharemask may-click"></div>
+        <div id="shareTip" class="sharetip"><img class="may-click" src="/public/images/wap/share-tips.png" alt="分享点击右上角"></div>
+    </div>
+</div>
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script src="/public/js/utils/web.js?v=20160816"></script>
+<script src="/public/js/plugin/shake/shake.min.js?v=20160816"></script>
+<script src="/public/js/plugin/zepto/zepto.min.js"></script>
+<script src="/public/js/plugin/zepto/touch.min.js"></script>
+<script src="/public/js/mobile/backto.js?from=chat&walltype=NoBound&v=20160816"></script>
+<script src="/public/js/utils/localforage.min.js"></script>
+<script type="text/javascript">
+    window.shakePlay = new Audio('/public/images/wap/shake.mp3');
+    window.shakeWin = new Audio('/public/images/wap/shakewin.mp3');
+    Zepto(function($) {
+        var activityId;
+        localforage.getItem('activityId', function (err, value) {
+            if(err){
+                console.log(err);
+            }else{
+                activityId=value;
+                $('#backtowall').bind('click', function() {
+                    var url = "/wechat/activity/"+activityId+"/index";
+                    this.href = url;
+                });
+            }
+        });
+
+        document.body.ontouchstart = function(e) {
+            if (e.target.className.indexOf('may-click') < 0 && e.target.className.indexOf('back-to-button') === -1) {
+                //如果是不是ios，阻止默认事件
+                if (navigator.userAgent.indexOf('iPhone') < 0) {
+                    e.preventDefault();
+                }
+            } else {
+                //分享弹出层控制
+                if (e.target == $('.shareBtn-a img')[0] || e.target == $('.shareBtn-a img')[1]) {
+                    $('#shareMask').css('display', 'block');
+                    $('#shareTip').css('display', 'block');
+                } else if (e.target == $('#shareTip img')[0] || e.target == $('#shareMask')[0]) {
+                    $('#shareMask').css('display', 'none');
+                    $('#shareTip').css('display', 'none');
+                }
+            }
+        }
+        var screenH = window.screen.height;
+        if (screenH == '1280') {
+            $('#Finish').addClass("shakeover-small").removeClass("shakeover");
+        }
+        //防止多窗口打开
+        var cookieName = 'shake-user-id';
+        var shakeUserId = Cookie.get(cookieName);
+        if (!shakeUserId) {
+            shakeUserId = Math.uuid(32);
+            Cookie.put('/', cookieName, shakeUserId, 30);
+        }
+        var height = document.body.clientHeight;
+        var topHeight = (height - 150) / 2;
+        var sections = document.getElementsByTagName('section');
+        var noStartContral = null;
+        /*for (var i = 0; i < sections.length - 1; i++) {
+            if (sections[i].id == 'In' || sections[i].id == 'NotStarted') {
+                sections[i].style.paddingTop = topHeight + 'px';
+            }
+        }*/
+        var showSection = function(showId) {
+            for (var i = 0; i < sections.length; i++) {
+                var item = sections[i];
+                if (item.id == showId) {
+                    removeClass(item, 'none');
+                } else {
+                    addClass(item, 'none');
+                }
+            }
+        }
+        var state = 'NotStarted';
+        showSection(state);
+
+        // 优化摇一摇
+        var recordControl = null; // 记录定时器,一秒钟提交一次
+        var count = 0,
+                tempCount = 0;
+        var shakeStatus = 0,
+                isFirstPlay = true; //是否是第一次播放中奖声音
+
+        function recordRequestHandler() { // 用于记录
+            tempCount = count;
+            count = 0;
+            if (!shakeActive||tempCount == 0) {
+                return;
+            }
+            //如果超过5，重新处理一下
+            if (tempCount > 5) {
+                tempCount = parseInt(Math.random() * 3) + 2;
+            }
+            $.ajax({
+                url:'/wechat/shakewall/shakes/shake/'+shakeActive.id+'/'+tempCount+'?_format=json',
+                dataType: 'json',
+                type: 'POST',
+                success: function(data) {
+                    try {
+                        if (data&&data.code == 0) {
+                            var msg = '',
+                                    imgUrl = '';
+                            shakeStatus = data.data.shake.status;
+                            if (shakeStatus == 0) { // 未开始
+                                showSection('NotStarted');
+                                clearInterval(animateControl);
+                                clearTimeout(noStartContral);
+                                count = 0;
+                                noStartContral = setTimeout(function() {
+                                    showSection('In');
+                                }, 2000);
+                            } else if (shakeStatus == 2) { // 结束
+                                showSection('Finish');
+                                clearInterval(animateControl);
+                                if (isFirstPlay) {
+                                    shakeWin.play();
+                                    isFirstPlay = false;
+                                }
+                                var html = '';
+                                if (data.data.shake && data.data.shake.shake_count) {
+                                    html = '您共摇' + data.data.shake.shake_count + '次';
+                                    // 重新初始化分享
+                                    msg = '我摇一摇得了第1名，快来快屏互动（微网页版）摇一摇吧！|快屏互动微信墙';
+                                }
+                                //alert(html);
+                                $('#Finish p').first().html(html);
+                            } else {
+                                showSection('In');
+                                if (!animateControl) {
+                                    animateControl = setInterval(function() {
+                                        if (shakeCount > tempShakeCount) {
+                                            //动画播放
+                                            $('.shake-in1').addClass('shakerote1');
+                                            $('.shake-in2').addClass('shakerote2');
+                                            tempShakeCount = shakeCount
+                                        } else {
+                                            $('.shake-in1').removeClass('shakerote1');
+                                            $('.shake-in2').removeClass('shakerote2');
+                                        }
+                                    }, 1000);
+                                }
+                            }
+                            initMenuSahre(msg, imgUrl);
+                        } else {
+                            // 活动未进行
+                            showSection('In');
+                            initMenuSahre();
+                        }
+                    } catch (e) {
+                        showSection('In');
+                        initMenuSahre();
+                        alert(e);
+                    }
+                },
+                error: function(e) {
+                    // alert('网络异常，请检查后重试!');
+                }
+            });
+        }
+        recordControl = setInterval(function() {
+            recordRequestHandler();
+        }, 1000);
+        var shakeCount = 0; //标记是否进行摇动的动画
+        var tempShakeCount = shakeCount;
+        var animateControl = null;
+
+        function shakeRecord() { // 摇一摇记录
+            var r = Math.ceil(Math.random() * 10);
+            if (r > 6) {
+                count = count + 2;
+            } else {
+                count++;
+            }
+            shakeCount++;
+        }
+
+        var startShake = function(){
+            if (window.DeviceMotionEvent) {
+                var shakeEvent = new Shake({
+                    handlerFn: function() {
+                        shakeRecord();
+                        if (shakeStatus != 2) {
+                            shakePlay.play();
+                        }
+                    },
+                    threshold: 8,
+                    timeout: 400
+                }).init();
+            } else {
+                alert('手机不支持摇一摇');
+            }
+        };
+
+        var shakeActive = null;
+        var getActiveshake = function(fn) {
+            $.ajax({
+                type: 'GET',
+                url: '/wechat/shakewall/shakes/active?_format=json',
+                success: function(data) {
+                    if(data&&!data.code){
+                        shakeActive = data;
+                        fn();
+                    }
+                },
+                complete: function() {
+                    fn();
+                }
+            });
+        };
+        getActiveshake(startShake);
+    });
+</script>
+</body>
+
+</html>

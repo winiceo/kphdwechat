@@ -1,0 +1,10 @@
+.emoji-wysiwyg-editor {
+	overflow: auto;
+	outline: none;
+}
+.emoji-wysiwyg-editor img,.wechat-emoji{
+	width: 20px;
+	height: 20px;
+	vertical-align: middle;
+	margin: -3px 0 0 0;
+}

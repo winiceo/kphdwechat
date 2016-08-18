@@ -1,0 +1,96 @@
+@charset "utf-8";
+/* note :    快屏互动项目 用于手机端的样式文件
+ * version:  1.0.0
+ * content: 包含的内容有： 兑奖页面、投票页面
+ * author：	陈实
+ * creatTime:  2015-04-22
+ */
+html  { width: 100%; height: 100%;}
+body { width: 100%; height: 100%; padding: 0; margin: 0;font-family: "Helvetica Neue", Helvetica, STHeiTi, sans-serif;  font-size:14px; color:#aab2bd;}
+header,section { display:block; box-sizing:border-box;}
+ul, li { list-style: none; margin: 0; padding: 0;}
+h1, h2, h3, h4, h5, p { margin: 0;}
+img { border: 0;}
+input, img { vertical-align: middle;}
+a { border:0; text-decoration:none;}
+input{font-family:"微软雅黑";}
+dl,dt,dd{margin:0; padding:0;}
+.fl{float:left}
+.fr{float:right;}
+/*去除一些浏览器给标签加的特定样式*/
+* { -webkit-tap-highlight-color: rgba(0,0,0,0);}
+ input[type="button"], input[type="submit"], input[type="reset"] {-webkit-appearance: none;}
+textarea {  -webkit-appearance: none;} 
+input:-moz-placeholder { color: #aab2bd; }
+::-webkit-input-placeholder { color:#aab2bd; }
+
+.wechat-emoji{width: 25px !important;height: 25px !important;transform: scale(1) !important;}
+
+header{ width:100%; line-height:44px; height:44px; font-size:18px; background-color:#3378ff; color:#FFF; text-align: center;}
+section { width:100%; padding-top:15px; padding-bottom:60px;}
+section h3{ color: #656d78; font-size: 18px; font-weight: normal; padding:12px 20px;}
+section h4{font-weight: normal; padding-left: 20px;padding-bottom: 10px;margin-top: -10px;}
+section ul{ width:100%; margin-top:10px; border-top: 1px solid #ebeef2;}
+section ul li{ color:#aab2bd; border-bottom: 1px solid #ebeef2; padding: 15px 20px;min-height: 27px;}
+section ul li input{ float:left;}
+section ul li.selectedli{ color:#656d78; font-weight:bold;}
+section ul li img{ margin:0 8px; width:27px; height:27px; float:left;}
+section ul li p{display:table-cell;vertical-align:middle;}
+.tips{ color: #000; font-size: 18px; text-align: center; padding: 70px 0;}
+.tips p{ background-size: 58px 58px;padding-top: 84px; background-position: top center; background-repeat: no-repeat; line-height: 27px;}
+
+.vote-cont{position:relative;height:100%;}
+.vote-style{padding-bottom:70px}
+/*按钮固定在底部的样式*/
+.btn-fix{ position: fixed; left: 0; bottom: 0; width: 100%; background-color: #ebebeb;padding: 12px 20px; box-sizing:border-box;}
+.btn-fix input{border: medium; color: #FFF; font-size: 18px; width: 100%; line-height: 36px; height: 36px; text-align: center; background-color: orange; border-radius: 3px;}
+.alreadytips{ color: #000; font-size: 18px; background-color: #f9f9f9; line-height: 75px; height: 75px; border-bottom: 1px solid #79c8e7; position: relative; padding-left: 20px; margin-top: -20px;}
+.alreadytips:after, .alreadytips:before {
+	position: absolute;
+	bottom: -1px;
+	left: 20px;
+	border: solid transparent;
+	content: " ";
+	height: 0;
+	width: 0;
+	pointer-events: none;
+}
+
+.alreadytips:after {
+	border-color: rgba(136, 183, 213, 0);
+	border-bottom-color: #f9f9f9;	
+	border-width: 12px;
+	margin-left: 1px;
+}
+.alreadytips:before {
+	border-color: rgba(194, 225, 245, 0);
+	border-bottom-color: #79c8e7;
+	border-width: 13px;
+}
+/* 投票结果 */
+.votechart{ width:92%; margin:0 auto 15px; margin-top:-20px; border:1px solid #79c8e7; border-radius:5px; padding:15px; box-sizing: border-box; color:#000;}
+.votechart dl{ width:100%;}
+.votechart dl dt{ font-size:15px; height:32px;}
+.votechart dl dd{ width:100%; font-size:15px; line-height:32px; height:32px; background-color:#d1e8ff; margin-bottom:13px; position:relative; overflow:hidden; padding:0 5px; box-sizing: border-box; z-index:0;}
+.votechart dl dd .fl{ width:65%; overflow:hidden;text-overflow: ellipsis;white-space: nowrap;}
+.votechart dl dd .fr{ width:33%; overflow:hidden;text-align:right;}
+.votechart dl dd .square{position:absolute; left:0; height:100%; background-color:#ff5c5c; z-index:-1;}
+
+.awardtips{ color: #000; font-size: 14px; background-color: #f9f9f9; border-bottom: 1px solid #ebeef2; margin-top: -20px; padding-left: 20px;}
+.awardform li{ border-bottom: none;}
+.awardform li input[type="text"]{ width: 100%; line-height: 42px; height: 42px; border:none; border-radius: 3px; background-color: #ebeef2; font-size: 15px; padding-left: 15px; box-sizing: border-box;}
+.awardform li input[type="button"]{border: medium; color: #FFF; font-size: 18px; width: 100%; line-height: 36px; height: 36px; text-align: center; background-color: #5d9cec; border-radius: 3px;}
+.award_error{ color: #ea3d15; font-size: 18px; line-height: 32px; height: 32px;}
+.award_img{ width: 100%; text-align: center; padding-top: 20px;}
+.award_img img{max-width: 320px;}
+
+.bottom{ width:40%; position:absolute; font-size:12px; color:#000; left:30%; bottom: 2%;padding-bottom: 0; margin:0 auto; margin-bottom:15px;}
+.bottom .hibtn,.bottom .hibtn:link,.bottom .hibtn:visited,.bottom .hibtn:hover{ width:96%; margin:0 auto; box-sizing: border-box; border:1px solid #000; border-radius: 24px; line-height: 27px; height: 30px; text-align:center; color: #000; display: block; text-decoration: none;}
+.bottom .arrow{ text-align: center; margin: 10px auto;}
+.bottom p{ width:100%; text-align: center;}
+.bottom p a,.bottom p a:link,.bottom p a:visited,.bottom p a:hover{ color: #3378ff; text-decoration: none;}
+.result-bottom.bottom{ position: static; margin-top:45px;}
+/*针对iphone4s即以下的设置*/
+@media (max-height: 500px){ 
+	.tips p.alone{padding-top:23%;}
+}

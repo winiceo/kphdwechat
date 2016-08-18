@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="快屏互动,微信墙,微信大屏幕,微现场,嗨现场,趣现场,微信互动,场景互动,微信现场互动,免费微信墙,微信上墙,会展微信墙,婚庆微信墙,婚礼微信墙,年会微信墙,会议微信墙,赛事微信墙,微信表白墙,微信墙源码,晚会互动游戏,微信墙申请,微信互动平台">
+    <meta name="description" content="快屏互动是一款免费，简单，好用，个性化的场景互动（微信墙|微信大屏幕）制作工具，包括微信上墙、签到、抽奖、投票等微现场互动功能，更有摇一摇、摇红包、数钱、对对碰等互动大屏幕游戏，适用于会议活动、婚礼婚庆、培训、年会、校园活动、赛事、演出等各类活动微现场，全部功能免费使用，无限制，活动零成本，现场互动效果佳，微信增粉效果好。">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
+    <!--自适应设备宽度-->
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta content="black" name="apple-mobile-web-app-status-bar-style" />
+    <meta content="telephone=no" name="format-detection" />
+    <link rel="stylesheet" href="/public/css/wapshakeprize.css?v=20160817">
+    <link rel="stylesheet" href="/public/css/wap-copyright.css?v=20160816" />
+    <title>摇大奖</title>
+    <script>
+    var version = '20160602',
+        wwwdomain = 'http://wall.71an.com/',
+            apidomain = 'http://wall-dev.71an.com/api/v1/';
+        env = 'product';
+    </script>
+    <!-- 模板配置 -->
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <meta name="renderer" content="webkit" />
+    <script>
+    // if (env && env == 'product') {
+    //     var useragent = navigator.userAgent;
+    //     if (useragent.match(/MicroMessenger/i) != 'MicroMessenger') {
+    //         alert('已禁止本次访问：您必须使用微信内置浏览器访问本页面！');
+    //         var opened = window.open('about:blank', '_self');
+    //         opened.opener = null;
+    //         opened.close();
+    //     }
+    // }
+    </script>
+</head>
+
+<body>
+    <div class="g-doc">
+        <div>
+            <a class="back-to-button" id="backtowall" back-to-with-chat-nobound="true" style="display:block;width:69px;height:24.5px;border-radius:5px;line-height:24.5px;border:1px solid #fef9d9;position:absolute;left:10px;top:7px;font-size:10px;text-decoration:none;color:#fef9d9;text-align:center;z-index:999;display:none;">返回微信墙</a>
+            <section class="status">
+                <img id="NotStarted" class="cont" src="/public/images/wap/prizenostart.png" alt="摇大奖未开始">
+                <div id="In" class="cont none">
+                    <img class="bg" src="/public/images/wap/shakeprize-ing.png" alt="摇大奖进行中">
+                    <img class="act" src="/public/images/wap/shakeprize-act.gif" alt="摇">
+                </div>
+                <img id="End" class="cont none" src="/public/images/wap/prizeover.png" alt="摇大奖结束">
+            </section>
+        </div>
+    </div>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <script src="/public/js/utils/web.js?v=20160816"></script>
+    <script src="/public/js/plugin/shake/shake.min.js?v=20160816"></script>
+    <script src="/public/js/plugin/zepto/zepto.min.js"></script>
+    <script src="/public/js/plugin/zepto/touch.min.js"></script>
+    <script src="/public/js/mobile/backto.js?from=chat&walltype=NoBound&v=20160602"></script>
+    <script src="/public/js/utils/localforage.min.js"></script>
+    <script type="text/javascript">
+    window.shakePlay = new Audio('/public/images/wap/shake.mp3');
+    Zepto(function($) {
+        var activityId;
+        localforage.getItem('activityId', function (err, value) {
+            if(err){
+                console.log(err);
+            }else{
+                activityId=value;
+                $('#backtowall').bind('click', function() {
+                    var url = "/wechat/activity/"+activityId+"/index";
+                    this.href = url;
+                });
+            }
+        });
+
+        var shakePrizeActive = null;
+        var pageChange = function(id) {
+            $('.status > .cont').addClass('none');
+            $(id).removeClass('none');
+            if (id == '#In') {
+                $('.g-ft').hide();
+            } else {
+                $('.g-ft').show();
+            }
+        };
+        var shakeStatus = 0;
+        var shakeRecord = function(fn) {
+            if(!shakePrizeActive||shakeStatus==2){
+                fn();
+                return;
+            }
+            tempCount = count;
+            count = 0;
+            if (tempCount == 0) {
+                return;
+            }
+            if (tempCount > 5) { //5为设置的理论值，防止某些用户摇出超高值的情况
+                tempCount = parseInt(Math.random() * 3) + 2;
+            }
+
+            var awardWin = {};
+            $.ajax({
+                url:'/wechat/shakeprizewall/shakeprizes/shake/'+shakePrizeActive.id+'/'+tempCount+'?_format=json',
+                dataType: 'json',
+                type: 'POST',
+                success: function(data) {
+                    if (data&&data.code == 0) {
+                        data = data.data;
+                        shakeStatus = data.shake_prize.status;
+                        if (0 == shakeStatus) {
+                            pageChange('#NotStarted');
+                            return;
+                        }else if(1 == shakeStatus){
+                            pageChange('#In');
+                        }
+                        else if (2 == shakeStatus) {
+                            pageChange('#End');
+                            awardWin = data.award;
+                            if(awardWin&&awardWin.id){
+                                awardWin.shakeTitle = shakePrizeActive.title;
+                                localforage.setItem('awardWin', awardWin, function (err) {
+                                    window.location.href = '/public/html/shakeRank.html?v=20160817';
+                                });
+                            }
+                        }
+                    }
+                },
+                complete: function() {
+                    fn();
+                }
+            });
+        };
+        // 显示为开始页面
+        var shakeState = false;
+        var count = 0, tempCount = 0;
+        var shake = function() {
+            if (!shakeState) {
+                shakeState = true;
+                var r = Math.ceil(Math.random() * 10);
+                if (r > 6) {
+                    count = count + 2;
+                } else {
+                    count++;
+                }
+
+                shakeRecord(function() {
+                    shakeState = false;
+                });
+            }
+        };
+
+        var startShake = function(){
+            window.shake = shake;
+            if (window.DeviceMotionEvent) {
+                var shakeEvent = new Shake({
+                    handlerFn: function() {
+                        //alert('somebody shake');
+                        shake();
+                        if (shakeStatus != 2) {
+                            shakePlay.play();
+                        }
+                    },
+                    threshold: 8,
+                    timeout: 400
+                }).init();
+            } else {
+                alert('手机不支持摇一摇');
+            }
+        };
+
+        var getActiveshakeprize = function(fn) {
+            $.ajax({
+                type: 'GET',
+                url: '/wechat/shakeprizewall/shakeprizes/active?_format=json',
+                success: function(data) {
+                    if(data&&!data.code){
+                        shakePrizeActive = data;
+                        fn();
+                    }
+                },
+                complete: function() {
+                    fn();
+                }
+            });
+        };
+        getActiveshakeprize(startShake);
+    });
+    </script>
+</body>
+
+</html>

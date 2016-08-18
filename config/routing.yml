@@ -1,0 +1,91 @@
+#api_homepage:
+#    path:     /hello/{name}
+#    defaults: { _controller: ApiBundle:Default:index }
+
+api_vip_wall:
+    type:         rest
+    prefix:       /api/v1
+    name_prefix:  api_
+    resource:     ApiBundle\Controller\VipWallController
+
+api_pic_wall:
+    type:         rest
+    prefix:       /api/v1
+    name_prefix:  api_
+    resource:     ApiBundle\Controller\PicWallController
+
+api_signin_wall:
+    type:         rest
+    prefix:       /api/v1
+    name_prefix:  api_
+    resource:     ApiBundle\Controller\SigninWallController
+
+api_msg_wall:
+    type:         rest
+    prefix:       /api/v1
+    name_prefix:  api_
+    resource:     ApiBundle\Controller\MsgWallController
+
+api_common:
+    type:         rest
+    prefix:       /api/v1
+    name_prefix:  api_
+    resource:     ApiBundle\Controller\CommonController
+
+api_acitivity:
+    type:         rest
+    prefix:       /api/v1
+    name_prefix:  api_
+    resource:     ApiBundle\Controller\ActivityController
+
+api_user:
+    type:         rest
+    prefix:       /api/v1
+    name_prefix:  api_
+    resource:     ApiBundle\Controller\UserController
+
+api_danmaku:
+    type:         rest
+    prefix:       /api/v1
+    name_prefix:  api_
+    resource:     ApiBundle\Controller\DanmakuController
+
+api_poll_wall:
+    type:         rest
+    prefix:       /api/v1
+    name_prefix:  api_
+    resource:     ApiBundle\Controller\PollWallController
+
+api_award_wall:
+    type:         rest
+    prefix:       /api/v1
+    name_prefix:  api_
+    resource:     ApiBundle\Controller\AwardWallController
+
+api_logo_wall:
+    type:         rest
+    prefix:       /api/v1
+    name_prefix:  api_
+    resource:     ApiBundle\Controller\LogoWallController
+
+api_shake_prize_wall:
+    type:         rest
+    prefix:       /api/v1
+    name_prefix:  api_
+    resource:     ApiBundle\Controller\ShakePrizeWallController
+
+api_shake_wall:
+    type:         rest
+    prefix:       /api/v1
+    name_prefix:  api_
+    resource:     ApiBundle\Controller\ShakeWallController
+
+api_sge_wall:
+    type:         rest
+    prefix:       /api/v1
+    name_prefix:  api_
+    resource:     ApiBundle\Controller\SgeWallController
+
+wechat_webapp:
+    type:         annotation
+    resource:     ApiBundle\Controller\WechatBaseController

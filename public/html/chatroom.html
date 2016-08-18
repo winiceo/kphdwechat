@@ -1,0 +1,189 @@
+<script>
+var version = '20160602',
+wwwdomain = 'http://wall-dev.71an.com/',
+imgdomain = 'http://img.wkey.cn/',
+wsdomain = 'ws://wall-dev.71an.com:1337',
+env = 'product';
+</script>
+<!-- 模板配置 -->
+<link rel="shortcut icon" href="../../favicon.ico"/>
+<meta name="renderer" content="webkit" />
+<meta charset="utf-8">
+<!--
+<script src="/public/js/mobile/kphdwechat/reboot.js" ></script>
+-->
+<link rel="stylesheet" href="/public/css/wapchatroom.css" />
+<div class="room">
+	<header class="room-header" >
+		<img class="logo" src="/public/images/wap/logo.svg" />
+		<span class="title" id="wall-title"></span>
+		<a class="close" href="javascript:;" >
+			<img src="/public/images/wap/icon-close.png" />
+		</a>
+		<a class="share share-button" href="javascript:;" >
+			<img src="/public/images/wap/icon-share.png" />
+		</a>
+	</header>
+	<div class="notify-tip" >
+	</div>
+	<div class="room-content" >
+		<div class="room-content-inner">
+			<div class="ptr normal">
+			        <div class="wrapper normal">
+			        	<span style="position: relative;top: 4px;left: 9px;visibility:hidden;">下拉刷新</span>
+				</div>
+				<div class="wrapper nomoredata" >
+					<span style="position:relative;top:4px;left:9px;" ></span>
+				</div>
+				<div class="wrapper loading" >
+					<div class="spinner">
+			                        <div class="spinner-container container1">
+			                                <div class="circle1"></div>
+			                                <div class="circle2"></div>
+			                                <div class="circle3"></div>
+			                                <div class="circle4"></div>
+			                        </div>
+			                        <div class="spinner-container container2">
+			                                <div class="circle1"></div>
+			                                <div class="circle2"></div>
+			                                <div class="circle3"></div>
+			                                <div class="circle4"></div>
+			                        </div>
+			                        <div class="spinner-container container3">
+			                                <div class="circle1"></div>
+			                                <div class="circle2"></div>
+			                                <div class="circle3"></div>
+			                                <div class="circle4"></div>
+			                        </div>
+			                </div>
+			                <span>正在加载</span>
+				</div>
+			</div>
+			<ul class="mlist" ></ul>
+		</div>
+	</div>
+	<div class="interaction-box" >
+		<div class="interaction-control-bar">
+			<a class="interaction-close-button" href="javascript:;" ><img src="/public/images/wap/icon-interaction-close-button.png" style="height:30px;width:30px;" /></a>
+		</div>
+		<div class="interaction-loading" ><div class="spinner">
+                        <div class="spinner-container container1">
+                                <div class="circle1"></div>
+                                <div class="circle2"></div>
+                                <div class="circle3"></div>
+                                <div class="circle4"></div>
+                        </div>
+                        <div class="spinner-container container2">
+                                <div class="circle1"></div>
+                                <div class="circle2"></div>
+                                <div class="circle3"></div>
+                                <div class="circle4"></div>
+                        </div>
+                        <div class="spinner-container container3">
+                                <div class="circle1"></div>
+                                <div class="circle2"></div>
+                                <div class="circle3"></div>
+                                <div class="circle4"></div>
+                        </div>
+                </div></div>
+		<div class="interaction-notify" >暂无活动...</div>
+		<ul class="interaction-list" >
+			<li class="interaction-item enable">
+				<a class="choose-pic">
+					<div class="wrapper" ><img src="/public/images/wap/choosepic.png" /></div>
+					<span>图片</span>
+				</a>
+			</li>
+			<li class="interaction-item enable" data-type="vote">
+				<a href="/public/html/viewvote.html?v=20160816">
+					<div class="wrapper" ><img src="/public/images/wap/viewvote.png" /></div>
+					<span>投票</span>
+				</a>
+			</li>
+
+			<li class="interaction-item enable" data-type="shake">
+				<a href="/public/html/viewshake.html?v=20160817">
+					<div class="wrapper" ><img src="/public/images/wap/viewshake.png" /></div>
+					<span>摇一摇</span>
+				</a>
+			</li>
+			<li class="interaction-item enable" data-type="shakeprize">
+				<a href="/public/html/viewdrawlottery.html?v=20160817">
+					<div class="wrapper"><img src="/public/images/wap/viewshakeprize.png" /></div>
+					<span>摇大奖</span>
+				</a>
+			</li>
+		</ul>
+	</div>
+	<div class="room-footer" >
+		<div class="room-footer-bar" style="position:relative;min-height:46px;display:block;width:100%;" >
+		<div class="inputor-wrapper" href="javascript:;">
+			<textarea id="inputor" oninput="this.style.height = this.scrollHeight + 'px';" rows="1"></textarea>
+			<a href="javascript:;" class="emotion-button" id="emotion-button"><img src="/public/images/wap/icon-emotion.png" /></a>
+			<a href="javascript:;" class="emotion-button close" id="emotion-close-button" ><img src="/public/images/wap/icon-emotion.png" /></a>
+		</div>
+			<a class="interaction" href="javascript:;">
+				<img src="/public/images/wap/allviews.png" />
+				<img class="active" src="/public/images/wap/allviews.png" />
+			</a>
+		<a class="send-button" href="javascript:;" >
+			<img src="/public/images/wap/SendMsg.png" />
+			<!-- <img class="active" src="../../css/mobile/kphdwechat/images/icon-send-button.active.png" /> -->
+		</a>
+		</div>
+
+		<footer></footer>
+	</div>
+
+	<!-- 聊天消息(文本) -->
+	<script type="text/template" id="chat-text-template">
+		<li class="mlist-item" data-id="{data.id}" data-creatime="{data.createDate}" data-chatype="{data.contentType}">
+		<div class="mitem-container {data.location} {data.virtualclass}">
+			<a class="mitem-avatar" href="javascript:;" ><img src="{data.avatar}" /></a>
+			<div class="mitem-content-wraper cf" >
+				<p class="avatar-name">{data.nickName}</p>
+				<div class="mitem-content {data.contentType}">
+					<p>{data.content.text}</p>
+					<span class="mitem-seq"><!-- {data.floorid} --></span>
+					<div class="mitem-controls" >
+						<a class="sending" href="javascript:;" ><img src="/public/images/wap/sending.gif" /></a>
+						<a class="faild" href="javascript:;" ><img src="/public/images/wap/chat-send-faild.png" /></a>
+					</div>
+				</div>
+			</div>
+		</div>
+		</li>
+	</script>
+
+	<!-- 聊天消息(图片) -->
+	<script type="text/template" id="chat-image-template">
+		<li class="mlist-item" data-id="{data.id}" data-creatime="{data.createDate}" data-chatype="{data.contentType}" data-picture-thumbnail-path="{data.content.small}" data-picture-path="{data.content.reference}">
+		<div class="mitem-container {data.location} {data.virtualclass}" >
+			<a class="mitem-avatar" href="javascript:;" ><img src="{data.avatar}" /></a>
+			<div class="mitem-content-wraper cf" >
+				<p class="avatar-name">{data.nickName}</p>
+				<div class="mitem-content {data.contentType}">
+					<p><a href="{data.content.reference}" ><img class="thumbimg" src="{data.content.small}" /></a></p>
+					<span class="mitem-seq"><!-- {data.floorid} --></span>
+					<div class="mitem-controls" >
+						<a class="sending" href="javascript:;" ><img src="/public/images/wap/sending.gif" /></a>
+						<a class="faild" href="javascript:;" ><img src="/public/images/wap/chat-send-faild.png" /></a>
+					</div>
+				</div>
+			</div>
+		</div>
+		</li>
+	</script>
+
+	<!-- 系统消息 -->
+	<script type="text/template" id="notify-lottery-template" >
+		<li class="mlist-item" data-id="{data.id}" data-creatime="{data.createDate}" data-notify-type="{data.type}" data-module="{data.module}">
+		<div class="notify {data.type}" >
+			<img class="icon" src="/public/images/wap/icon-notify-{data.module}.png" />
+			<p class="text {data.type} {data.module}" >恭喜您获得了{data.lottery.award_name}{data.lottery.prize_name}<a href="javascript:;" data-vote-id="{data.lottery.id}"></a></p>
+			<time class="time">{data.creatimestring}</time>
+			<a class="close" >x</a>
+		</div>
+		</li>
+	</script>
+</div>

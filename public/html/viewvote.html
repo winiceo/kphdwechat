@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
+    <!--自适应设备宽度-->
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta content="black" name="apple-mobile-web-app-status-bar-style" />
+    <meta content="telephone=no" name="format-detection" />
+    <title>投票</title>
+    <script>
+        var version = '20160602',
+                wwwdomain = 'http://wall.71an.com/',
+                imgdomain = 'http://img.wkey.cn/',
+                wsdomain = 'ws://wall.71an.com:1337',
+                env = 'product';
+    </script>
+    <!-- 模板配置 -->
+    <link rel="shortcut icon" href="../../favicon.ico" />
+    <meta name="renderer" content="webkit" />
+    <script>
+        // if (env && env == 'product') {
+        //     var useragent = navigator.userAgent;
+        //     if (useragent.match(/MicroMessenger/i) != 'MicroMessenger') {
+        //         alert('已禁止本次访问：您必须使用微信内置浏览器访问本页面！');
+        //         var opened = window.open('about:blank', '_self');
+        //         opened.opener = null;
+        //         opened.close();
+        //     }
+        // }
+    </script>
+    <link rel="stylesheet" href="/public/css/wap.css?v=20160816" />
+    <link rel="stylesheet" href="/public/css/wap-copyright.css" />
+</head>
+<body>
+<div class="g-doc">
+    <div class="g-bd">
+        <a class="back-to-button" id="backtowall" back-to-with-chat-nobound="true" style="display:block;width:69px;height:24.5px;border-radius:5px;line-height:24.5px;border:1px solid #666666;position:absolute;left:10px;top:7px;font-size:10px;text-decoration:none;color:#666666;text-align:center;z-index:999;display:none;">返回微信墙</a>
+        <header style="background:transparent;"></header>
+        <section id="voteCont">
+            <h3 class="alreadytips"></h3>
+        </section>
+        <section id="voteChart" class="votechart">
+            <dl>
+                <dt>投票结果：</dt>
+            </dl>
+            <div class="btn-fix">
+                <input id="updateBtn" type="button" value="提交"/>
+            </div>
+        </section>
+        <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+        <script src="/public/js/plugin/zepto/zepto.min.js"></script>
+        <script src="/public/js/mobile/backto.js?from=chat&walltype=NoBound&v=20160602"></script>
+        <script src="/public/js/utils/localforage.min.js"></script>
+        <script>
+            Zepto(function($) {
+
+                var activityId;
+                var wechatJs;
+
+                var getVoteResult = function() {
+                    $.ajax({
+                        type: "get",
+                        url: "/wechat/pollwall/questions/active?_format=json",
+                        dataType: "json",
+                        success: function(data){
+                            initVoteResult(data);
+                        },
+                        //complete: fn
+                    });
+                };
+
+                var voteResult;
+                var initVoteResult = function(data) {
+                    voteResult = data;
+                    $('#voteCont h3').text(voteResult.title);
+
+                    var _html = '',
+                            votePercent = 0,
+                            maxVote = 0, // 取投票最大值
+                            len = voteResult.choices?voteResult.choices.length:0;
+                    for (var i = len - 1; i >= 0; i--) {
+                        maxVote += voteResult.choices[i].poll;
+                    }
+                    if(maxVote==0)
+                        maxVote=1;
+                    var multiple = voteResult.multiple;
+                    var type = multiple?"Checkbox":"Radio";
+                    for (var i = 0; i < len; i++) {
+                        votePercent = Math.round(voteResult.choices[i].poll / maxVote * 100);
+                        _html += '<dd>';
+                        var picurl=voteResult.choices[i].pic?voteResult.choices[i].pic.url:"/public/images/wap/like.png";
+                        _html += '<span class="fl"><input name="suboptions" type="'+type+'">' + voteResult.choices[i].name+'</span>';
+                        _html += '<span class="fr">' + (voteResult.choices[i].poll||0) + '票<img style="height:32px;width:32px;" src="' +picurl + '"/>'+'</span>';
+                        _html += '<div class="square" style="width:' + votePercent + '%"></div>';
+                        _html += '</dd>';
+                        //alert(_html);
+                    }
+                    $('#voteChart dl').empty().append(_html);
+                    var h = $('#voteCont').offsetHeight,
+                            screenH = window.screen.height;
+                    if ((screenH - h) - 195 < 0) {
+                        $('.bottom').style.position = 'static';
+                        $('.bottom').style.marginTop = '-30px';
+                    }
+                };
+                getVoteResult();
+                var inputCheck = function(){
+                    var multiple = voteResult.multiple;
+                    var flag = false;
+                    var suboptionArr = document.getElementsByName("suboptions"),
+                            n = 0;
+                    for(var i=0;i<suboptionArr.length;i++){
+                        if(suboptionArr[i].checked){
+                            voteResult.choices[i].selected=1;
+                            flag = true;
+                            n++;
+                        }else{
+                            voteResult.choices[i].selected=0;
+                        }
+                    }
+                    if(flag){
+                        if(multiple && voteResult.max_choices != 0 && n > voteResult.max_choices){
+                            alert('最多选'+voteResult.max_choices+'个');
+                            /*layer.open({
+                                content: '最多选'+voteResult.max_choices+'个',
+                                className: 'layertips',
+                                shadeClose:false,
+                                time: 2
+                            });*/
+                            return;
+                        }
+                        if(multiple && voteResult.min_choices != 0 && n < voteResult.min_choices){
+                            alert('最少选'+voteResult.min_choices+'个');
+                           /*layer.open({
+                                content: '最少选'+voteResult.min_choices+'个',
+                                className: 'layertips',
+                                shadeClose:false,
+                                time: 2
+                            });*/
+                            return;
+                        }
+                        $.ajax({
+                            type: "post",
+                            url: "/wechat/pollwall/question/poll/"+voteResult.id+"?_format=json",
+                            data:{choices:voteResult.choices},
+                            dataType: "json",
+                            success: function(data){
+                                if(data.code==0){
+                                    getVoteResult();
+                                }else{
+                                    alert(data.message);
+                                }
+                            },
+                            //complete: fn
+                        });
+                    }else{
+                        alert('请选择投票项!');
+                        return flag;
+                    }
+                };
+
+                $('#updateBtn').bind('click', function() {
+                    inputCheck();
+                    //alert('123');
+                });
+
+                $('#backtowall').bind('click', function() {
+                    var url = "/wechat/activity/"+activityId+"/index";
+                    this.href = url;
+                });
+
+                $('#hibtn').bind('click', function() {
+                    var url = '/wall/mobile/wallList.html';
+                    var ua = navigator.userAgent.toLowerCase();
+                    if (ua.match(/MicroMessenger/i) == 'micromessenger') {
+                        url = '/web/thirdlogin/mp/index.html?type=LOGIN';
+                    }
+                    this.href = url;
+                });
+                // 初始化分享
+                var initMenuSahre = function() {
+                    if (!wx) {
+                        return;
+                    }
+                    wx.hideMenuItems({
+                        menuList: ["menuItem:exposeArticle", "menuItem:share:qq", "menuItem:share:weiboApp", "menuItem:favorite", "menuItem:share:facebook", "menuItem:share:QZone", "menuItem:editTag", "menuItem:delete", "menuItem:copyUrl", "menuItem:originPage", "menuItem:readMode", "menuItem:openWithQQBrowser", "menuItem:openWithSafari", "menuItem:share:email", "menuItem:share:brand"]
+                    });
+                    var title = '我刚刚参与了喜欢用快屏的哪个墙？投票，快来快屏（微网页版）参与投票吧！|快屏';
+                    var link = wwwdomain + 'wechat/activity/' +activityId+ '/index';
+                    var imgUrl ='/public/images/wap/kplogo.jpg';
+
+                    wx.onMenuShareTimeline({
+                        title: title,
+                        link: link,
+                        imgUrl: imgUrl,
+                        trigger: function(res) {},
+                        success: function(res) {},
+                        cancel: function(res) {},
+                        fail: function(res) {}
+                    });
+                    wx.onMenuShareAppMessage({
+                        title: title,
+                        link: link,
+                        imgUrl: wwwdomain + 'images/vote/share.png',
+                        desc: '', // 分享描述
+                        type: '', // 分享类型,music、video或link，不填默认为link
+                        dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
+                        success: function() {
+                            // 用户确认分享后执行的回调函数
+                        },
+                        cancel: function() {
+                            // 用户取消分享后执行的回调函数
+                        }
+                    });
+                }
+                //"menuItem:copyUrl"
+                localforage.getItem('wechatjs', function (err, value) {
+                    if(err){
+                        console.log(err);
+                    }else{
+                        wechatJs=value;
+                        localforage.getItem('activityId', function (err, value) {
+                            if(err){
+                                console.log(err);
+                            }else{
+                                activityId=value;
+                                /*if (wx) {
+                                    wx.config(wechatJs);
+                                    wx.ready(function() {
+                                        initMenuSahre();
+                                    });
+                                    wx.error(function(res) {
+                                        //alert(res);
+                                    });
+                                };*/
+                            }
+                        });
+                    }
+                });
+            });
+        </script>
+    </div>
+</div>
+</body>
+
+</html>

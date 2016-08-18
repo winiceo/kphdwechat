@@ -1,0 +1,16 @@
+services:
+#    api.example:
+#        class: ApiBundle\Example
+#        arguments: [@service_id, "plain_value", %parameter%]
+
+    andy.topic_sample_service:
+        class: ApiBundle\Topic\AndyTopic
+        arguments:  ['@gos_web_socket.zmq.pusher']
+        tags:
+            - { name: gos_web_socket.topic }
+
+    andy.rpc_sample_service:
+        class: ApiBundle\Rpc\AndyRpc
+        tags:
+            - { name: gos_web_socket.rpc }
+

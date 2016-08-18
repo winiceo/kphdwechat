@@ -1,0 +1,13 @@
+andy_topic:
+    channel: andy/channel/{id}
+    handler:
+        callback: 'andy.topic' #related to the getName() of your topic
+
+andy_rpc:
+    channel: sample/{method}
+    handler:
+        callback: 'andy.rpc' #related to the getName() or your RPC service
+    requirements:
+        method:
+            pattern: "[a-z_]+"
+

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta content="black" name="apple-mobile-web-app-status-bar-style" />
+    <meta content="telephone=no" name="format-detection" />
+    <link rel="stylesheet" href="/public/css/wapshakeprize.css">
+    <script>
+        var version = '2016072102',
+                wwwdomain = 'http://wall-dev.71an.com/',
+                proflag = 'com.kuaiping',
+                env = 'product';
+    </script>
+    <!-- 模板配置 -->
+    <link rel="shortcut icon" href="/favicon.ico"/>
+    <meta name="renderer" content="webkit" />
+    <script>
+        (function(){
+            var useragent = navigator.userAgent;
+            if (useragent.match(/MicroMessenger/i) != 'MicroMessenger') {
+                /*if (env && env == 'product') {
+                    alert('已禁止本次访问：您必须使用微信内置浏览器访问本页面！');
+                    var opened = window.open('about:blank', '_self');
+                    opened.opener = null;
+                    opened.close();
+                }*/
+            }else{
+                // 禁止下拉
+                var startY = 0,y = 0,time = new Date().getTime();
+                document.addEventListener('touchstart', function(e) {
+                    startY = e.changedTouches[0].clientY;
+                }, false);
+                document.addEventListener('touchmove', function(e) {
+                    var nowTime = new Date().getTime();
+                    if(nowTime - time > 100){
+                        startY = e.changedTouches[0].clientY;
+                        time = nowTime;
+                    }
+                    y = e.changedTouches[0].clientY - startY;
+                    var nt = document.body.scrollTop - y;
+                    if(nt < 0) nt = 0;
+                    document.body.scrollTop = nt;
+                    e.preventDefault();
+                }, false);
+            }
+        })();
+    </script><title>奖品详情</title>
+
+</head>
+<body class="prizelist">
+<link rel="stylesheet" href="/public/css/wap-copyright.css?v=20160816" />
+<div class="g-doc">
+    <div class="g-bd"><!-- // 返回微网页；入口页面 -->
+        <a class="back-to-button" id="backtowall" back-to-with-chat-nobound="true"
+           style="display:block;width:69px;height:24.5px;border-radius:5px;line-height:24.5px;border:1px solid #fef9d9;position:absolute;left:10px;top:7px;font-size:10px;text-decoration:none;color:#fef9d9;text-align:center;z-index:999;display:none;"
+                >返回微信墙</a>
+        <section id="redenvelope" class="getred none">
+            <div class="title">
+                <h4>微信红包</h4>
+                <h5>恭喜您，获得微信现金红包<span class="prizeCount">100</span>元</h5>
+                <p class="prizeName"></p>
+                <p class="time"></p>
+            </div>
+            <div class="listcont">
+                <h5>微信昵称：<span class="wechatname"></span></h5>
+                <p class="description">恭喜中奖! 请尽快联系主办方领奖吧</p>
+            </div>
+        </section>
+        <section id="entity" class="getgift none">
+            <div class="title">
+                <h4>恭喜您！获得摇大奖<span class="shakeprize-title"></span>奖品！</h4>
+                <img class="giftimg" src="" alt="">
+                <h5 class="prizeName"></h5>
+                <p class="time"></p>
+            </div>
+            <div class="listcont">
+                <h5>微信昵称：<span class="wechatname"></span></h5>
+                <p class="description">恭喜中奖! 请尽快联系主办方领奖吧</p>
+            </div>
+        </section>
+        <script src="/public/js/plugin/zepto/zepto.min.js"></script>
+        <script src="/public/js/utils/web.js?v=20160816"></script>
+        <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+        <script src="/public/js/mobile/backto.js?20160816" ></script>
+        <script src="/public/js/utils/localforage.min.js"></script>
+    </div>
+</div>
+<script>
+    //播放中奖声音
+    window.autoPlay = new Audio('/public/images/wap/shakewin.mp3');
+    autoPlay.play();
+    Zepto(function($){
+
+        var activityId;
+        localforage.getItem('activityId', function (err, value) {
+            if(err){
+                console.log(err);
+            }else{
+                activityId=value;
+                $('#backtowall').bind('click', function() {
+                    var url = "/wechat/activity/"+activityId+"/index";
+                    this.href = url;
+                });
+            }
+        });
+
+        var awardWin={};
+        localforage.getItem('awardWin', function (err, value) {
+            if(err){
+                console.log(err);
+            }else{
+                awardWin = value;
+                if(awardWin){
+                    var type = awardWin.type==0?'entity':'redenvelope';
+                    $('#' + type).removeClass('none');
+                    $('.shakeprize-title').text(awardWin.shakeTitle);
+                    $('.time').text('中奖时间：'+awardWin.created_at);
+                    localforage.getItem('nickname', function (err, value) {
+                        if(!err){
+                            $('.wechatname').html(value);
+                        }
+                    });
+                    $('.prizeName').text(awardWin.prize_name);
+                    if(awardWin.type==1){
+                        $('.prizeCount').text(awardWin.amount/100);
+                        if(awardWin.wishing){
+                            $('.listcont .description').html($.trim(awardWin.wishing));
+                        }
+                    }else{
+                        if(awardWin.description){
+                            $('.listcont .description').html($.trim(awardWin.description));
+                        }
+                    }
+                    if(awardWin.pic){
+                        var i = 0,url = awardWin.pic.url_small;
+                        var loadImg = function(){
+                            if(i > 5){
+                                return;
+                            }
+                            i++;
+                            var img = new Image();
+                            img.onload = function(){
+                                $('.giftimg').attr('src',url);
+                            };
+                            img.onerror = function(e){
+                                setTimeout('loadImg',100);
+                            };
+                            img.src = url;
+                        };
+                        loadImg();
+                    }
+                }
+            }
+        });
+    })
+</script>
+</body>
+</html>
